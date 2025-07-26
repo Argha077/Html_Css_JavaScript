@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Calculator</title>
+  <style>
+    body {
+      background: #181818;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .calculator {
+      background: #2c2c2c;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+      width: 350px;
+    }
+
+    .display {
+      background: #111;
+      color: #00FF99;
+      font-size: 2.5em;
+      text-align: right;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    button {
+      padding: 20px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 12px;
+      background: #3b3b3b;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #555;
+    }
+
+    .equal {
+      background-color: #04AA6D;
+      grid-column: span 2;
+    }
+
+    .clear {
+      background-color: #f44336;
+    }
+
+    .special {
+      background-color: #5c6bc0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button onclick="clearDisplay()" class="clear">C</button>
+      <button onclick="backspace()" class="special">←</button>
+      <button onclick="append('%')" class="special">%</button>
+      <button onclick="append('/')" class="special">÷</button>
+
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button onclick="append('*')" class="special">×</button>
+
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button onclick="append('-')" class="special">−</button>
+
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button onclick="append('+')" class="special">+</button>
+
+      <button onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button onclick="squareRoot()" class="special">√</button>
+      <button onclick="calculate()" class="equal">=</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+
+    function append(value) {
+      if (display.textContent === "0" && value !== '.') {
+        display.textContent = value;
+      } else {
+        display.textContent += value;
+      }
+    }
+
+    function clearDisplay() {
+      display.textContent = "0";
+    }
+
+    function backspace() {
+      if (display.textContent.length > 1) {
+        display.textContent = display.textContent.slice(0, -1);
+      } else {
+        display.textContent = "0";
+      }
+    }
+
+    function squareRoot() {
+      try {
+        const result = Math.sqrt(parseFloat(display.textContent));
+        display.textContent = isNaN(result) ? "Error" : result;
+      } catch {
+        display.textContent = "Error";
+      }
+    }
+
+    function calculate() {
+      try {
+        let expression = display.textContent.replace(/×/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
+        let result = Function('"use strict";return (' + expression + ')')();
+        display.textContent = result ?? "Error";
+      } catch {
+        display.textContent = "Error";
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (!isNaN(e.key) || ['+', '-', '*', '/', '.', '%'].includes(e.key)) {
+        append(e.key);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        calculate();
+      } else if (e.key === 'Backspace') {
+        backspace();
+      } else if (e.key.toLowerCase() === 'c') {
+        clearDisplay();
+      }
+    });
+  </script>
+
+</body>
+</html>
